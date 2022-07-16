@@ -1,64 +1,52 @@
 #include "sort.h"
 
 /**
- * swap_nodes - function that swap nodes in doubly linked list
- *@current: point current of the doubly linked list
- *@flag: is one if swap is in the head of the list
- * Return: pointer to the current point
+ * insertion_sort_list - Sort a doubly linked list with insertion sort.
+ * @list: Double pointer to an doubly linked list (only numbers).
+ *
+ * Return: Void.
  */
-listint_t *swap_nodes(listint_t *current, int *flag)
-{
-	listint_t *tmp = current->next;
 
-	tmp->prev = NULL;
-	if (current->prev != NULL)
-	{
-		tmp->prev = current->prev;
-		tmp->prev->next = tmp;
-	}
-	else if (current->prev == NULL)
-		*flag = 1;
-
-	current->prev = tmp;
-	current->next = tmp->next;
-	tmp->next = current;
-	if (current->next != NULL)
-		current->next->prev = current;
-
-	return (tmp);
-}
-
-/**
- * insertion_sort_list - function that swaps nodes
- *@list: pointer to list
- * Return: Nothing
- */
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *current = NULL;
-	int flag;
+	listint_t *node = NULL, *holder = NULL, *tmp = NULL;
 
-	if (!list || !*list)
+	if (!list || !(*list) || (*list)->next == NULL)
 		return;
 
-	current = *list;
-	while (current->next)
+	for (node = *list; node;)
 	{
-		flag = 0;
-		if (current->n > current->next->n)
+		if (node->next && (node->n > node->next->n))
 		{
-			current = swap_nodes(current, &flag);
-			if (flag == 1)
-				*list = current;
-			print_list(*list);
-			while (current->prev != NULL && current->prev->n > current->n)
+			holder = node->next;
+			for (tmp = holder; tmp->prev; tmp = tmp->prev)
+				if (tmp->prev->n < tmp->n)
+					break;
+
+			if (holder->next && holder->prev)
 			{
-				swap_nodes(current->prev, &flag);
-				if (flag == 1)
-					*list = current;
-				print_list(*list);
+				holder->prev->next = holder->next;
+				holder->next->prev = holder->prev;
 			}
+			else
+			{
+				holder->prev->next = NULL;
+			}
+
+			holder->next = tmp;
+			if (tmp->prev)
+			{
+				tmp->prev->next = holder, holder->prev = tmp->prev;
+				tmp->prev = holder;
+			}
+			else
+			{
+				tmp->prev = holder, holder->prev = NULL;
+				*list = holder;
+			}
+			print_list(*list), node = *list;
+			continue;
 		}
-		current = current->next;
+		node = node->next;
 	}
 }

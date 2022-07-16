@@ -3,34 +3,40 @@
 /**
  * selection_sort - sorts an array of integers in ascending
  * order using the Selection sort algorithm
- *@array: point to first element in array
- *@size: size of the array
- * Return: Nothing
+ *
+ * @array: array of integers
+ *
+ * @size: size of array
+ *
  */
 
 void selection_sort(int *array, size_t size)
 {
-	size_t cont = 0, min = 0, i = 0;
-	int tmp = 0;
+	size_t i, j, min_index;
+	int temp;
+	int flag;
 
-	if (!array || !size)
+	if (size <= 1)
 		return;
 
-	for (i = 0; i < size; i++)
+	for (i = 0; i < size - 1; i++)
 	{
-		min = i;
-		tmp = 0;
-		for (cont = i + 1; cont < size; cont++)
+		min_index = i;
+		for (j = i + 1; j < size; j++)
 		{
-			if (array[cont] < array[i] && array[min] > array[cont])
-				min = cont;
+			if (array[j] < array[min_index])
+			{
+				min_index = j;
+				flag = 1;
+			}
 		}
-		if (min != i)
+		if (flag == 1)
 		{
-			tmp = array[i];
-			array[i] = array[min];
-			array[min] = tmp;
+			temp = array[min_index];
+			array[min_index] = array[i];
+			array[i] = temp;
 			print_array(array, size);
+			flag = 0;
 		}
 	}
 }
