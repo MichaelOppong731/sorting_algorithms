@@ -1,10 +1,20 @@
 #ifndef _DECK_H_
 #define _DECK_H_
 
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef enum kind_e { SPADE = 0, HEART, CLUB, DIAMOND } kind_t;
+/**
+* enum kind_e - Enumeration of the kinds of cards.
+* @SPADE: Spades.
+* @HEART: Hearts.
+* @CLUB: Clubs.
+* @DIAMOND: Diamonds.
+*/
+typedef enum kind_e
+{
+	SPADE = 0,
+	HEART,
+	CLUB,
+	DIAMOND
+} kind_t;
 
 /**
  * struct card_s - Playing card
@@ -13,9 +23,10 @@ typedef enum kind_e { SPADE = 0, HEART, CLUB, DIAMOND } kind_t;
  * From "Ace" to "King"
  * @kind: Kind of the card
  */
-typedef struct card_s {
-  const char *value;
-  const kind_t kind;
+typedef struct card_s
+{
+	const char *value;
+	const kind_t kind;
 } card_t;
 
 /**
@@ -25,9 +36,11 @@ typedef struct card_s {
  * @prev: Pointer to the previous node of the list
  * @next: Pointer to the next node of the list
  */
-typedef struct deck_node_s {
-  const card_t *card;
-  struct deck_node_s *prev;
-  struct deck_node_s *next;
+typedef struct deck_node_s
+{
+	const card_t *card;
+	struct deck_node_s *prev;
+	struct deck_node_s *next;
 } deck_node_t;
-#endif  /* _DECK_H_ */
+void sort_deck(deck_node_t **deck);
+#endif /* _DECK_H_ */

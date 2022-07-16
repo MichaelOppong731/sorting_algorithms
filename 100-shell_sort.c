@@ -1,34 +1,35 @@
 #include "sort.h"
-
 /**
- * shell_sort - sing the Shell sort algorithm
- * @array: Array to be Sorted
- * @size:size of the array
- * Return:Sorted Array (void)
- */
+* shell_sort - Implementation of the shell sort algoritm.
+* @array: Array to sort.
+* @size: Size of the array.
+*/
 void shell_sort(int *array, size_t size)
 {
-	int n = 1, i, j;
-	int tmp;
+	int temp;
+	unsigned int knuth = 1, i, j, smallest;
 
-	if (!array || !size || size < 2)
+	if (size < 2)
 		return;
-	while (n < (int)size / 3)
-		n = n * 3 + 1;
-	while (n > 0)
+	while (knuth < size)
+		knuth = knuth * 3 + 1;
+	while (knuth > 1)
 	{
-		for (i = n; i < (int)size; i++)
+		knuth = (knuth - 1) / 3;
+		for (i = 0; i < size - 1; i++)
 		{
-			tmp = array[i];
-			j = i;
-			while (j > (n - 1) && array[j - n] >= tmp)
+			smallest = i;
+			for (j = i + knuth; j < size; j += knuth)
 			{
-				array[j] = array[j - n];
-				j -= n;
+				if (array[j] < array[smallest])
+				{
+					smallest = j;
+				}
 			}
-			array[j] = tmp;
+			temp = array[smallest];
+			array[smallest] = array[i];
+			array[i] = temp;
 		}
-		n = n / 3;
 		print_array(array, size);
 	}
 }

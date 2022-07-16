@@ -1,52 +1,67 @@
 #include "sort.h"
 
 /**
- * insertion_sort_list - Sort a doubly linked list with insertion sort.
- * @list: Double pointer to an doubly linked list (only numbers).
- *
- * Return: Void.
+ * swap - swaps two contiguous doubly linked nodes
+ * @left: left node
+ * @right: right node
+ * @head: Head of the list
+ * Return: void
  */
+listint_t *swap(listint_t *left, listint_t *right, listint_t *head)
+{
+	listint_t *temp;
 
+	if (right->next)
+		right->next->prev = left;
+	if (left->prev)
+		left->prev->next = right;
+
+	right->prev = left->prev;
+	left->next = right->next;
+	right->next = left;
+	left->prev = right;
+
+	temp = left;
+	left = right;
+	right = temp;
+
+	if (left->prev == NULL)
+		return (left);
+	else
+		return (head);
+}
+
+/**
+ * insertion_sort_list - run insertion sort over a
+ * double linked list
+ * @list: pointer to a dlinked list
+ * Return: void
+ */
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *node = NULL, *holder = NULL, *tmp = NULL;
+	listint_t *left, *right, *ptr;
 
-	if (!list || !(*list) || (*list)->next == NULL)
+	if (list == NULL || *list == NULL)
 		return;
 
-	for (node = *list; node;)
+	if ((*list)->next == NULL)
+		return;
+
+	ptr = (*list)->next;
+	right = ptr;
+	left = ptr->prev;
+
+	while (ptr != NULL)
 	{
-		if (node->next && (node->n > node->next->n))
+		while (left != NULL && left->n > right->n)
 		{
-			holder = node->next;
-			for (tmp = holder; tmp->prev; tmp = tmp->prev)
-				if (tmp->prev->n < tmp->n)
-					break;
-
-			if (holder->next && holder->prev)
-			{
-				holder->prev->next = holder->next;
-				holder->next->prev = holder->prev;
-			}
-			else
-			{
-				holder->prev->next = NULL;
-			}
-
-			holder->next = tmp;
-			if (tmp->prev)
-			{
-				tmp->prev->next = holder, holder->prev = tmp->prev;
-				tmp->prev = holder;
-			}
-			else
-			{
-				tmp->prev = holder, holder->prev = NULL;
-				*list = holder;
-			}
-			print_list(*list), node = *list;
-			continue;
+			*list = swap(left, right, *list);
+			print_list(*list);
+			left = right->prev;
 		}
-		node = node->next;
+		left = ptr;
+		ptr = ptr->next;
+		right = ptr;
 	}
+
 }
