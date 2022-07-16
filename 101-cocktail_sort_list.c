@@ -1,90 +1,72 @@
 #include "sort.h"
 /**
-*swap - swaps 2 nodes in a doubly-linked list
-*@a: address of first node
-*@b: address of second node
+*integer_count- number of times integer appears in an array
 *
-*Return: void
+*@array: array given
+*@size: size of array
+*@range: number to check for occurance
+*
+*Return: number of occurances
 */
-void swap(listint_t *a, listint_t *b)
+int integer_count(int *array, size_t size, int range)
 {
-	if (a->prev)
-		a->prev->next = b;
-	if (b->next)
-		b->next->prev = a;
-	a->next = b->next;
-	b->prev = a->prev;
-	a->prev = b;
-	b->next = a;
-}
-/**
-*tail_traverse- function that sorts from the tail back
-*
-*@head: head of list
-*@tail: tail of the list
-*@list: original head of the list
-*
-*Return: new head of the list
-*/
-listint_t *tail_traverse(listint_t *head, listint_t *tail, listint_t *list)
-{
-	while (tail && tail->prev)
+	int total = 0;
+	size_t i;
+
+	for (i = 0; i < size; i++)
 	{
-		if (tail->n < tail->prev->n)
+		if (array[i] == range)
+			total++;
+	}
+	return (total);
+}
+
+/**
+*counting_sort - counting sort algorithm
+*
+*@array: array to be sorted
+*@size: size of the array
+*/
+void counting_sort(int *array, size_t size)
+{
+	int k = 0, b = 0, r = 0;
+	size_t i, c;
+	int *array2, *newArray;
+
+	if (!array || size < 2)
+		return;
+	for (i = 0; i < size; i++)
+	{
+		if (array[i] > k)
 		{
-			swap(tail->prev, tail);
-			if (tail->prev == NULL)
-				list = tail;
-			print_list(list);
+			k = array[i];
 		}
+	}
+	array2 = malloc(sizeof(int) * (k + 1));
+	if (!array2)
+		return;
+	for (c = 0; c < ((size_t)k + 1); c++)
+	{
+		if (c == 0)
+			array2[c] = integer_count(array, size, r);
 		else
-			tail = tail->prev;
-		if (tail->prev == NULL)
-			head = tail;
-	}
-	return (head);
-}
-
-/**
-*cocktail_sort_list - sorts linked list using cocktail shaker sort
-*
-*@list: doubly linked list to be sorted
-*/
-void cocktail_sort_list(listint_t **list)
-{
-	listint_t *tail, *head, *len;
-	int i = 0, j = 0, swaped = 1;
-
-	if (!list || !*list)
-		return;
-	len = *list;
-	for (i = 0; len; i++)
-	{
-		len = len->next;
-	}
-	if (i < 2)
-		return;
-	head = *list;
-	while (j < i)
-	{
-		swaped = 0;
-		while (head && head->next)
 		{
-			if (head->n > head->next->n)
-			{
-				swap(head, head->next);
-				swaped++;
-				if (head->prev->prev == NULL)
-					*list = head->prev;
-				print_list(*list);
-			}
-			else
-				head = head->next;
-			if (head->next == NULL)
-				tail = head;
+			b = array2[c - 1] + integer_count(array, size, r);
+			array2[c] = b;
 		}
-		head = tail_traverse(head, tail, *list);
-		*list = head;
-		j++;
+		r++;
 	}
+	print_array(array2, (k + 1));
+	newArray = malloc(sizeof(int) * size);
+	if (!newArray)
+	{
+		free(array2);
+		return;
+	}
+	for (i = 0; i < size; i++)
+		newArray[array2[array[i]]-- - 1] = array[i];
+	for (i = 0; i < size; i++)
+		array[i] = newArray[i];
+	free(newArray);
+	free(array2);
 }
