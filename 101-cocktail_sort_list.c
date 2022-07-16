@@ -1,76 +1,67 @@
 #include "sort.h"
-void swap(listint_t **pointer1, listint_t **pointer2, int n);
-
+#include <stdio.h>
 /**
- *  cocktail_sort_list - sorts a doubly linked list of integers in ascending
- *  order using the Cocktail shaker sort algorithm
- * @list: double pointer listint_t
+ *swap_node - swap a node for his previous one
+ *@node: node
+ *@list: node list
+ *Return: return a pointer to a node which was enter it
+ */
+listint_t *swap_node(listint_t *node, listint_t **list)
+{
+	listint_t *back = node->prev, *current = node;
+	/*NULL, 19, 48, 9, 71, 13, NULL*/
+
+	back->next = current->next;
+	if (current->next)
+		current->next->prev = back;
+	current->next = back;
+	current->prev = back->prev;
+	back->prev = current;
+	if (current->prev)
+		current->prev->next = current;
+	else
+		*list = current;
+	return (current);
+}
+/**
+ *cocktail_sort_list - this is a cocktail sort implementation
+ *working on a double linked lists
+ *@list: list
  */
 void cocktail_sort_list(listint_t **list)
 {
-	int i, size = 0, swapped;
-	listint_t *head = *list, *tail;
+	listint_t *node;
+	int swap_done = 1;
 
-	if (list == NULL || *list == NULL || (*list)->next == NULL)
+	if (list == '\0' || (*list) == '\0' || (*list)->next == '\0')
 		return;
-
-	while (head)
-		size++, head = head->next;
-
-	do {
-		head = *list;
-		i = 0, swapped = 0;
-		while (i < size - 1)
+	node = *list;
+	while (swap_done == 1)
+	{
+		swap_done = 0;
+		while (node->next)
 		{
-			if (head->n > head->next->n)
+			if (node->n > node->next->n)
 			{
-				swap(&head, &head->next, 0);
+				node = swap_node(node->next, list);
+				swap_done = 1;
 				print_list(*list);
-				swapped = 1;
 			}
-			head = head->next;
-			i++;
+			node = node->next;
 		}
-		tail = head, i = size - 1;
-		while (i > 0)
+		if (swap_done == 0)
+			break;
+		swap_done = 0;
+		while (node->prev)
 		{
-			if (tail->n < tail->prev->n)
+			if (node->n < node->prev->n)
 			{
-				swap(&tail->prev, &tail, 1);
-				if (!tail->prev->prev)
-					*list = tail->prev;
+				node = swap_node(node, list);
+				swap_done = 1;
 				print_list(*list);
-				swapped = 1;
 			}
-			tail = tail->prev;
-			i--;
+			else
+				node = node->prev;
 		}
-	} while (swapped);
-}
-
-/**
- * swap - swaps the elements of the list
- * @pointer1: first pointer input
- * @pointer2: second pointer input
- * @n: n is 0 for increase, n is 1 for decrease
- * Return: nothing
- */
-void swap(listint_t **pointer1, listint_t **pointer2, int n)
-{
-	listint_t *aux = *pointer1, *tmp = *pointer2;
-
-	aux->next = tmp->next, tmp->prev = aux->prev;
-
-	if (tmp->next)
-		tmp->next->prev = aux;
-
-	if (aux->prev)
-		aux->prev->next = tmp;
-
-	aux->prev = tmp, tmp->next = aux;
-
-	if (n == 0)
-		*pointer1 = tmp;
-	else
-		*pointer2 = aux;
+	}
 }
