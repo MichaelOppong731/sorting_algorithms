@@ -1,58 +1,84 @@
 #include "sort.h"
+#include <stdio.h>
 
 /**
- * swap - Function that swaps two values
- *
- * @a: Fisrt value
- * @b: Second value
- * Return: 0
- */
-void swap(int *a, int *b)
-{
-	int tmp;
-
-	tmp = *b;
-	*b = *a;
-	*a = tmp;
-}
-
-/**
- * gap_sort - sort array with gaps
- * @array: array to be sorted
- * @size: size of array
- * @gap: gap size
- */
-void gap_sort(int *array, size_t size, unsigned int gap)
-{
-	size_t j, k;
-
-	for (j = gap; j < size; j++)
-	{
-		k = j;
-		while (k >= gap && array[k] < array[k - gap])
-		{
-			swap(array + k, array + k - gap);
-			k -= gap;
-		}
-	}
-}
-
-/**
- * shell_sort - shell sort
- * @array: array to be sorted
- * @size: size of array
+ * shell_sort - Uses the Knuth sequence to sort an array in place
+ * @array: Pointer to the first element in the array
+ * @size: The size of the array
  */
 void shell_sort(int *array, size_t size)
 {
-	unsigned int gap = 1;
+	unsigned int *gaps;
+	unsigned int i, j, k, gap;
+	int temp;
 
-	while (gap < size / 3)
-		gap = gap * 3 + 1;
+	if (!array || size < 2)
+		return;
 
-	while (gap >= 1)
+	gaps = gen_arr(size);
+
+	for (i = 0; gaps[i] > 0; ++i)
 	{
-		gap_sort(array, size, gap);
-		gap = (gap - 1) / 3;
+		gap = gaps[i];
+
+		for (j = gap; j < size; j += 1)
+		{
+			temp = array[j];
+
+			for (k = j; k >= gap && array[k - gap] > temp; k -= gap)
+				array[k] = array[k - gap];
+
+			array[k] = temp;
+		}
+
 		print_array(array, size);
 	}
+
+	free(gaps);
+}
+
+/**
+ * my_pow - A function to get the result of an exponent
+ * @b: The base
+ * @x: The exponent
+ *
+ * Return: The result of b^x
+ */
+int my_pow(int b, unsigned int x)
+{
+	unsigned int i;
+	int tot = 1;
+
+	for (i = 0; i < x; ++i)
+		tot *= b;
+
+	return (tot);
+}
+
+/**
+ * gen_arr - Generates an array of the Knuth sequence
+ * @size: The size of the array to be sequenced
+ *
+ * Return: A malloc'd array of the intervals
+ */
+unsigned int *gen_arr(unsigned int size)
+{
+	int div_to;
+	unsigned int *arr;
+	unsigned int i, n_ele;
+
+	div_to = (size / 3) * 2 + 1;
+	div_to += div_to % 3;
+
+	for (n_ele = 0; div_to > 0; ++n_ele)
+		div_to /= 3;
+
+	arr = malloc(sizeof(unsigned int) * n_ele + 1);
+
+	for (i = 0; i < n_ele; ++i)
+		arr[i] = (my_pow(3, n_ele - i) - 1) / 2;
+
+	arr[i] = 0;
+
+	return (arr);
 }
